@@ -16,9 +16,16 @@
   <option value="good">Team B Good Form</option>
   <option value="bad">Team B Bad Form</option>
 </select><br><input type="number" id="a_goals" placeholder="Team A Goals (Home)">
-<input type="number" id="b_goals" placeholder="Team B Goals (Away)"><br><select id="fatigue">
-  <option value="no">No Fatigue (Both Teams)</option>
-  <option value="yes">Fatigue Present (Both Teams - e.g Europa)</option>
+<input type="number" id="b_goals" placeholder="Team B Goals (Away)"><br><select id="fatigue_a">
+  <option value="none">Team A No Fatigue</option>
+  <option value="champions">Team A Champions League</option>
+  <option value="europa">Team A Europa League</option>
+  <option value="conference">Team A Conference League</option>
+</select><select id="fatigue_b">
+  <option value="none">Team B No Fatigue</option>
+  <option value="champions">Team B Champions League</option>
+  <option value="europa">Team B Europa League</option>
+  <option value="conference">Team B Conference League</option>
 </select><br><button onclick="predict()">Predict</button>
 
 <div id="result"></div><div class="ads">
@@ -37,7 +44,8 @@ async function predict() {
       b_form: document.getElementById("b_form").value,
       a_goals: Number(document.getElementById("a_goals").value),
       b_goals: Number(document.getElementById("b_goals").value),
-      fatigue: document.getElementById("fatigue").value
+      fatigue_a: document.getElementById("fatigue_a").value,
+      fatigue_b: document.getElementById("fatigue_b").value
     })
   });
 
