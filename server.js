@@ -1,57 +1,39 @@
-const express = require('express');
+const express = require("express");
+const cors = require("cors");
+
 const app = express();
-const cors = require('cors');
 
 app.use(cors());
 app.use(express.json());
 
-app.post('/predict', (req, res) => {
-  const { a_draw, b_draw, a_form, b_form, a_goals, b_goals, fatigue } = req.body;
+app.post("/predict", (req, res) => {
+  const { a_draw, b_draw, a_form, b_form, a_goals, b_goals, fatigue_a, fatigue_b } = req.body;
 
-  let drawScore = 0, winAScore = 0, winBScore = 0;
+  let winAScore = 0;
+  let winBScore = 0;
+  let drawScore = 0;
 
-  // Rennes Model draw logic
-  if (a_draw >= 15 && b_draw >= 15) drawScore += 3;
-  if (Math.abs(a_draw - b_draw) < 5) drawScore += 2;
-  if (a_form === b_form) drawScore += 1;
-  if (Math.abs(a_goals - b_goals) < 3) drawScore += 2;
-  // Fatigue logic (European competitions)
+  // Draw logic
+  if (a_draw > 30 && b_draw > 30) {
+    drawScore += 2;
+  }
 
-// Team A fatigue impact
-if (fatigue_a === "champions") winAScore -= 1;
-if (fatigue_a === "europa") winAScore -= 0.7;
-if (fatigue_a === "conference") winAScore -= 0.5;
+  // Form
+  if (a_form === "good") winAScore += 1;
+  if (b_form === "good") winBScore += 1;
 
-// Team B fatigue impact
-if (fatigue_b === "champions") winBScore -= 1;
-if (fatigue_b === "europa") winBScore -= 0.7;
-if (fatigue_b === "conference") winBScore -= 0.5;
+  // Goals
+  if (a_goals > b_goals) winAScore += 1;
+  if (b_goals > a_goals) winBScore += 1;
 
-// If both teams are fatigued → increases draw probability
-if (fatigue_a !== "none" && fatigue_b !== "none") {
-  drawScore += 2;
-}
+  // Fatigue
+  if (fatigue_a !== "none") winAScore -= 0.5;
+  if (fatigue_b !== "none") winBScore -= 0.5;
 
-  // Win logic
-  if (a_goals > b_goals) winAScore += 2;
-  if (b_goals > a_goals) winBScore += 2;
+  let result = "Draw";
+  let confidence = 50;
 
-  if (a_form === "good" && b_form !== "good") winAScore += 2;
-  if (b_form === "good" && a_form !== "good") winBScore += 2;
-
-  let max = Math.max(drawScore, winAScore, winBScore);
-
-  let prediction = "";
-  if (max === drawScore) prediction = "Draw";
-  else if (max === winAScore) prediction = "Team A Win";
-  else prediction = "Team B Win";
-
-  let total = drawScore + winAScore + winBScore;
-  let confidence = Math.round((max / total) * 100);
-
-  res.json({ prediction, confidence });
-});
-
-app.listen(process.env.PORT || 3000, () => {
-  console.log("Server running");
-});
+  if (winAScore > winBScore && winAScore > drawScore) {
+    result = "Team A Wins";
+    confidence = 70;
+  } else if (win
