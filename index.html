@@ -1,62 +1,129 @@
-<style>
-  body {
-    font-family: Arial, sans-serif;
-    background: #0f172a;
-    color: white;
-    text-align: center;
-    padding: 20px;
-  }
+<!DOCTYPE html><html>
+<head>
+  <title>MatchPredicta</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #0f172a;
+      color: white;
+      text-align: center;
+      padding: 20px;
+    }h1 {
+  font-size: 32px;
+  margin-bottom: 5px;
+}
 
-  h1 {
-    font-size: 32px;
-    margin-bottom: 20px;
-  }
+p {
+  margin-bottom: 20px;
+  color: #cbd5f5;
+}
 
-  .container {
-    background: #1e293b;
-    padding: 20px;
-    border-radius: 15px;
-    max-width: 400px;
-    margin: auto;
-    box-shadow: 0 0 20px rgba(0,0,0,0.5);
-  }
+.container {
+  background: #1e293b;
+  padding: 20px;
+  border-radius: 15px;
+  max-width: 400px;
+  margin: auto;
+  box-shadow: 0 0 20px rgba(0,0,0,0.5);
+}
 
-  input, select {
-    width: 90%;
-    padding: 12px;
-    margin: 8px 0;
-    border-radius: 10px;
-    border: none;
-    outline: none;
-    font-size: 14px;
-  }
+input, select {
+  width: 90%;
+  padding: 12px;
+  margin: 8px 0;
+  border-radius: 10px;
+  border: none;
+  outline: none;
+  font-size: 14px;
+}
 
-  button {
-    width: 95%;
-    padding: 12px;
-    margin-top: 10px;
-    border-radius: 10px;
-    border: none;
-    background: #22c55e;
-    color: white;
-    font-size: 16px;
-    cursor: pointer;
-  }
+button {
+  width: 95%;
+  padding: 12px;
+  margin-top: 10px;
+  border-radius: 10px;
+  border: none;
+  background: #22c55e;
+  color: white;
+  font-size: 16px;
+  cursor: pointer;
+}
 
-  button:hover {
-    background: #16a34a;
-  }
+button:hover {
+  background: #16a34a;
+}
 
-  #result {
-    margin-top: 20px;
-    font-size: 22px;
-    font-weight: bold;
-  }
+#result {
+  margin-top: 20px;
+  font-size: 22px;
+  font-weight: bold;
+}
 
-  .ads {
-    margin-top: 30px;
-    padding: 15px;
-    border-radius: 10px;
-    background: #334155;
+.ads {
+  margin-top: 30px;
+  padding: 15px;
+  border-radius: 10px;
+  background: #334155;
+}
+
+  </style>
+</head>
+<body><h1>MatchPredicta ⚽</h1>
+<p>Powered by the Rennes Model</p><div class="container"><p>Team A Draw % (League Only)</p>
+<input type="number" id="a_draw"><p>Team B Draw % (League Only)</p>
+<input type="number" id="b_draw"><select id="a_form">
+  <option value="good">Team A Good Form</option>
+  <option value="bad">Team A Bad Form</option>
+</select><select id="b_form">
+  <option value="good">Team B Good Form</option>
+  <option value="bad">Team B Bad Form</option>
+</select><p>Team A Goals (Home)</p>
+<input type="number" id="a_goals"><p>Team B Goals (Away)</p>
+<input type="number" id="b_goals"><select id="fatigue_a">
+  <option value="none">Team A No Fatigue</option>
+  <option value="champions">Team A Champions League</option>
+  <option value="europa">Team A Europa League</option>
+  <option value="conference">Team A Conference League</option>
+</select><select id="fatigue_b">
+  <option value="none">Team B No Fatigue</option>
+  <option value="champions">Team B Champions League</option>
+  <option value="europa">Team B Europa League</option>
+  <option value="conference">Team B Conference League</option>
+</select><button onclick="predict()">Predict</button>
+
+<div id="result"></div></div><div class="ads">
+  Ad Space
+</div><script>
+async function predict() {
+  const res = await fetch("https://matchpredicta.onrender.com/predict", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      a_draw: Number(document.getElementById("a_draw").value),
+      b_draw: Number(document.getElementById("b_draw").value),
+      a_form: document.getElementById("a_form").value,
+      b_form: document.getElementById("b_form").value,
+      a_goals: Number(document.getElementById("a_goals").value),
+      b_goals: Number(document.getElementById("b_goals").value),
+      fatigue_a: document.getElementById("fatigue_a").value,
+      fatigue_b: document.getElementById("fatigue_b").value
+    })
+  });
+
+  const data = await res.json();
+
+  const resultBox = document.getElementById("result");
+  resultBox.innerText = data.prediction + " (" + data.confidence + "% confidence)";
+
+  if (data.confidence > 75) {
+    resultBox.style.color = "#22c55e";
+  } else if (data.confidence > 50) {
+    resultBox.style.color = "#eab308";
+  } else {
+    resultBox.style.color = "#ef4444";
   }
-</style>
+}
+</script></body>
+</html>
