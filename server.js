@@ -36,4 +36,13 @@ app.post("/predict", (req, res) => {
   if (winAScore > winBScore && winAScore > drawScore) {
     result = "Team A Wins";
     confidence = 70;
-  } else if (win
+  } else if (winBScore > winAScore && winBScore > drawScore) {
+    result = "Team B Wins";
+    confidence = 70;
+  }
+
+  res.json({ result, confidence });
+});
+
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => console.log("Server running"));
