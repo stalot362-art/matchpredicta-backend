@@ -2,47 +2,67 @@ const express = require("express");
 const cors = require("cors");
 
 const app = express();
-
 app.use(cors());
 app.use(express.json());
 
 app.post("/predict", (req, res) => {
-  const { a_draw, b_draw, a_form, b_form, a_goals, b_goals, fatigue_a, fatigue_b } = req.body;
+  const { parity, scoring, form } = req.body;
 
-  let winAScore = 0;
-  let winBScore = 0;
-  let drawScore = 0;
-
-  // Draw logic
-  if (a_draw > 30 && b_draw > 30) {
-    drawScore += 2;
+  // Step 1: Parity check
+  if (parity === "no") {
+    return res.json({
+      result: "Unpredictable",
+      confidence: 40
+    });
   }
 
-  // Form
-  if (a_form === "good") winAScore += 1;
-  if (b_form === "good") winBScore += 1;
-
-  // Goals
-  if (a_goals > b_goals) winAScore += 1;
-  if (b_goals > a_goals) winBScore += 1;
-
-  // Fatigue
-  if (fatigue_a !== "none") winAScore -= 0.5;
-  if (fatigue_b !== "none") winBScore -= 0.5;
-
-  let result = "Draw";
-  let confidence = 50;
-
-  if (winAScore > winBScore && winAScore > drawScore) {
-    result = "Team A Wins";
-    confidence = 70;
-  } else if (winBScore > winAScore && winBScore > drawScore) {
-    result = "Team B Wins";
-    confidence = 70;
+  // GOOD scoring
+  if (scoring === "good") {
+    return res.json({
+      result: "Team A Wins",
+      confidence: 75
+    });
   }
 
-  res.json({ result, confidence });
+  // MEDIUM scoring
+  if (scoring === "medium") {
+    if (form === "good") {
+      return res.json({
+        result: "Draw",
+        confidence: 60
+      });
+    }
+
+    if (form === "bad") {
+      return res.json({
+        result: "Team A Wins",
+        confidence: 65
+      });
+    }
+
+    return res.json({
+      result: "Draw",
+      confidence: 55
+    });
+  }
+
+  // BAD scoring
+  if (scoring === "bad") {
+    if (form === "good") {
+      return res.json({
+        result: "Team A Loses",
+        confidence: 70
+      });
+    }
+
+    return res.json({
+      result: "Draw",
+      confidence: 60
+    });
+  }
 });
 
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => console.log("Server running"));
+const PORT = process.env.PORT || 10000;
+app.listen(PORT, () => {
+  console.log("Server running on port " + PORT);
+});
