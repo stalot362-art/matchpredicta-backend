@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>MatchPredicta</title>
+  <style>
+    body { font-family: Arial; text-align: center; padding: 20px; }
+    input, select, button { margin: 5px; padding: 10px; }
+    #result { margin-top: 20px; font-size: 20px; }
+    .ads { margin-top: 30px; border: 1px dashed gray; padding: 20px; }
+  </style>
+</head>
+<body>
+
+<h1>MatchPredicta</h1>
+
+<input type="number" id="a_draw" placeholder="Team A Draw %">
+<input type="number" id="b_draw" placeholder="Team B Draw %"><br>
+
+<select id="a_form">
+  <option value="good">Team A Good Form</option>
+  <option value="bad">Team A Bad Form</option>
+</select>
+
+<select id="b_form">
+  <option value="good">Team B Good Form</option>
+  <option value="bad">Team B Bad Form</option>
+</select><br>
+
+<input type="number" id="a_goals" placeholder="Team A Goals">
+<input type="number" id="b_goals" placeholder="Team B Goals"><br>
+
+<select id="fatigue">
+  <option value="no">No Fatigue</option>
+  <option value="yes">Fatigue (Europa etc)</option>
+</select><br>
+
+<button onclick="predict()">Predict</button>
+
+<div id="result"></div>
+
+<div class="ads">
+  Ad Space
+</div>
+
+<script>
+async function predict() {
+  const res = await fetch("https://matchpredicta.onrender.com/predict", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      a_draw: Number(document.getElementById("a_draw").value),
+      b_draw: Number(document.getElementById("b_draw").value),
+      a_form: document.getElementById("a_form").value,
+      b_form: document.getElementById("b_form").value,
+      a_goals: Number(document.getElementById("a_goals").value),
+      b_goals: Number(document.getElementById("b_goals").value),
+    
+      fatigue: document.getElementById("fatigue").value
+    })
+  });
+
+  const data = await res.json();
+
+  document.getElementById("result").innerText =
+    data.prediction + " (" + data.confidence + "% confidence)";
+}
+</script>
+
+</body>
+</html>
