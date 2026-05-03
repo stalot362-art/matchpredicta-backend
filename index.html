@@ -54,6 +54,12 @@
 <p>Powered by Rennes Model</p>
 
 <div class="box">
+  <label>Team A (Home)</label>
+  <input type="text" id="teamA" placeholder="e.g. Arsenal">
+
+  <label>Team B (Away)</label>
+  <input type="text" id="teamB" placeholder="e.g. Chelsea">
+  
 
   <label>Are both teams within ten points off each other?</label>
   <select id="parity">
@@ -83,6 +89,9 @@
 
 <script>
 async function predict() {
+
+  const teamA = document.getElementById("teamA").value;
+  const teamB = document.getElementById("teamB").value;
   const parity = document.getElementById("parity").value;
   const scoring = document.getElementById("scoring").value;
   const form = document.getElementById("form").value;
@@ -98,8 +107,21 @@ async function predict() {
 
     const data = await res.json();
 
+    let finalResult = data.result;
+
+    if (data.result === "Team A Wins") {
+    finalResult = teamA + " Wins";
+    }
+    else if (data.result === "Team A Loses") {
+    finalResult = teamB + " Wins";
+    }
+    else if (data.result === "Draw") {
+    finalResult = teamA + " vs " + teamB + " Draw";
+    }
+
     document.getElementById("result").innerText =
-      data.result + " (Confidence: " + data.confidence + "%)";
+    teamA + " vs " + teamB + ": " +
+    finalResult + " (Confidence: " + data.confidence + "%)";
   } catch (err) {
     document.getElementById("result").innerText = "Error connecting to server";
   }
