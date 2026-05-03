@@ -1,5 +1,4 @@
-<!DOCTYPE html>
-<html>
+<!DOCTYPE html><html>
 <head>
   <title>MatchPredicta</title>
   <style>
@@ -9,40 +8,22 @@
     .ads { margin-top: 30px; border: 1px dashed gray; padding: 20px; }
   </style>
 </head>
-<body>
-
-<h1>MatchPredicta</h1>
-
-<input type="number" id="a_draw" placeholder="Team A Draw %">
-<input type="number" id="b_draw" placeholder="Team B Draw %"><br>
-
-<select id="a_form">
+<body><h1>MatchPredicta</h1><input type="number" id="a_draw" placeholder="Team A Draw % (League)">
+<input type="number" id="b_draw" placeholder="Team B Draw % (League)"><br><select id="a_form">
   <option value="good">Team A Good Form</option>
   <option value="bad">Team A Bad Form</option>
-</select>
-
-<select id="b_form">
+</select><select id="b_form">
   <option value="good">Team B Good Form</option>
   <option value="bad">Team B Bad Form</option>
-</select><br>
+</select><br><input type="number" id="a_goals" placeholder="Team A Goals (Home)">
+<input type="number" id="b_goals" placeholder="Team B Goals (Away)"><br><select id="fatigue">
+  <option value="no">No Fatigue (Both Teams)</option>
+  <option value="yes">Fatigue Present (Both Teams - e.g Europa)</option>
+</select><br><button onclick="predict()">Predict</button>
 
-<input type="number" id="a_goals" placeholder="Team A Goals">
-<input type="number" id="b_goals" placeholder="Team B Goals"><br>
-
-<select id="fatigue">
-  <option value="no">No Fatigue</option>
-  <option value="yes">Fatigue (Europa etc)</option>
-</select><br>
-
-<button onclick="predict()">Predict</button>
-
-<div id="result"></div>
-
-<div class="ads">
+<div id="result"></div><div class="ads">
   Ad Space
-</div>
-
-<script>
+</div><script>
 async function predict() {
   const res = await fetch("https://matchpredicta.onrender.com/predict", {
     method: "POST",
@@ -56,7 +37,6 @@ async function predict() {
       b_form: document.getElementById("b_form").value,
       a_goals: Number(document.getElementById("a_goals").value),
       b_goals: Number(document.getElementById("b_goals").value),
-    
       fatigue: document.getElementById("fatigue").value
     })
   });
@@ -66,7 +46,5 @@ async function predict() {
   document.getElementById("result").innerText =
     data.prediction + " (" + data.confidence + "% confidence)";
 }
-</script>
-
-</body>
+</script></body>
 </html>
