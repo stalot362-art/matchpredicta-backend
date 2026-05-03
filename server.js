@@ -15,7 +15,22 @@ app.post('/predict', (req, res) => {
   if (Math.abs(a_draw - b_draw) < 5) drawScore += 2;
   if (a_form === b_form) drawScore += 1;
   if (Math.abs(a_goals - b_goals) < 3) drawScore += 2;
-  if (fatigue === "yes") drawScore += 1;
+  // Fatigue logic (European competitions)
+
+// Team A fatigue impact
+if (fatigue_a === "champions") winAScore -= 1;
+if (fatigue_a === "europa") winAScore -= 0.7;
+if (fatigue_a === "conference") winAScore -= 0.5;
+
+// Team B fatigue impact
+if (fatigue_b === "champions") winBScore -= 1;
+if (fatigue_b === "europa") winBScore -= 0.7;
+if (fatigue_b === "conference") winBScore -= 0.5;
+
+// If both teams are fatigued → increases draw probability
+if (fatigue_a !== "none" && fatigue_b !== "none") {
+  drawScore += 2;
+}
 
   // Win logic
   if (a_goals > b_goals) winAScore += 2;
